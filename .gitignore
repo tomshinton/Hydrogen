@@ -52,6 +52,10 @@ Plugins/*/Binaries/*
 # Builds
 Build/*
 
+#Information added by JetBrains Rider for Unreal Engine
+.idea/*
+Plugins/Developer/RiderLink
+
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
 !Build/*/
 Build/*/**
