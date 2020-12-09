@@ -1,18 +1,21 @@
 {
-  "FileVersion": "3",
-  "EngineAssociation": "{FF899131-41F3-5006-D4CE-D19EB81FD160}",
-  "Category": "",
-  "Description": "",
-  "Modules": [
-    {
-      "Name": "Hydrogen",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
-    },
-    {
-      "Name": "Movement",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
-    }
-  ]
+	"FileVersion": 3,
+	"EngineAssociation": "{FF899131-41F3-5006-D4CE-D19EB81FD160}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "Hydrogen",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		},
+		{
+			"Name": "Movement",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
 }
