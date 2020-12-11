@@ -7,7 +7,9 @@
 
 #include "HydrogenPlayerCharacter.generated.h"
 
-UCLASS()
+class UPlayerCameraComponent;
+
+UCLASS(MinimalAPI)
 class AHydrogenPlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
@@ -15,4 +17,9 @@ class AHydrogenPlayerCharacter : public ACharacter
 public:
 
 	AHydrogenPlayerCharacter(const FObjectInitializer& InObjectInitialiser);
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	UPlayerCameraComponent* PlayerCamera;
 };
