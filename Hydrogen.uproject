@@ -21,6 +21,16 @@
       "Name": "Camera",
       "Type": "Runtime",
       "LoadingPhase": "Default"
+    },
+    {
+      "Name": "Interaction",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "Collision",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
     }
   ]
 }

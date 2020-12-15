@@ -18,6 +18,8 @@ public class Hydrogen : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] 
 		{
+"Collision",
+"Interaction",
 "Camera",
 			"Movement"
 		});
