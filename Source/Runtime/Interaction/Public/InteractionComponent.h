@@ -20,6 +20,7 @@ public:
 
 #if WITH_CLIENT_CODE
 	void BeginPlay() override;
+	void SetupComponentInputBindings(UInputComponent& PlayerInputComponent) override;
 #endif //WITH_CLIENT_CODE
 
 	UPROPERTY(EditDefaultsOnly)
@@ -27,7 +28,13 @@ public:
 
 private:
 
+	void StartUse();
+	void EndUse();
+
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	void UpdateHover(const float InDeltaTime);
+	void UpdateUse(const float InDeltaTime);
 
 	void OnTraceComplete(const FTraceHandle& InHandle, FTraceDatum& InData);
 	void ProcessData(const FTraceDatum& InTraceData);
@@ -45,4 +52,8 @@ private:
 	
 	TWeakInterfacePtr<IPlayerViewInterface> CachedViewInterface;
 	TWeakInterfacePtr<IHoverableInterface> CurrentHover;
+
+	bool IsUsing;
+	float UseTime;
+	float TapLength;
 };

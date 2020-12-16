@@ -6,6 +6,11 @@
 
 DEFINE_LOG_CATEGORY_STATIC(InteractionComponentLog, Log, Log)
 
+namespace InteractionComponentBindings
+{
+	const FName UseBinding = TEXT("Use");
+}
+
 UInteractionComponent::UInteractionComponent(const FObjectInitializer& InObjectInitialiser)
 	: TraceDistance(2000.f)
 	, TraceParams()
@@ -14,6 +19,9 @@ UInteractionComponent::UInteractionComponent(const FObjectInitializer& InObjectI
 	, CanTrace(true)
 	, CachedViewInterface()
 	, CurrentHover()
+	, IsUsing(false)
+	, UseTime(0.f)
+	, TapLength(0.1)
 {
 	TraceParams.AddIgnoredActor(GetOwner());
 
@@ -41,24 +49,67 @@ void UInteractionComponent::BeginPlay()
 }
 #endif //WITH_CLIENT_CODE
 
+#if WITH_CLIENT_CODE
+void UInteractionComponent::SetupComponentInputBindings(UInputComponent& PlayerInputComponent)
+{
+	Super::SetupComponentInputBindings(PlayerInputComponent);
+
+	PlayerInputComponent.BindAction(InteractionComponentBindings::UseBinding, IE_Pressed, this, &UInteractionComponent::StartUse);
+	PlayerInputComponent.BindAction(InteractionComponentBindings::UseBinding, IE_Released, this, &UInteractionComponent::EndUse);
+}
+#endif //WITH_CLIENT_CODE
+
+void UInteractionComponent::StartUse()
+{
+	IsUsing = true;
+}
+
+void UInteractionComponent::EndUse()
+{
+	IsUsing = false;
+
+	if (UseTime <= TapLength)
+	{
+		UE_LOG(InteractionComponentLog, Log, TEXT("Ended using with a tap"));
+	}
+
+	UseTime = 0.f;
+}
+
 void UInteractionComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	if (CanTrace)
 	{
-		//Request async trace
-		if (UWorld* World = GetWorld())
-		{
-			const FTransform PlayerViewpoint = CachedViewInterface->GetCameraTransform();
-
-			const FVector StartLocation = PlayerViewpoint.GetLocation();
-			const FVector EndLocation = PlayerViewpoint.GetLocation() + ((PlayerViewpoint.GetRotation().Vector() * TraceDistance));
-
-			World->AsyncLineTraceByChannel(EAsyncTraceType::Single, StartLocation, EndLocation, ECC_Interaction, TraceParams, FCollisionResponseParams::DefaultResponseParam, &TraceDelegate);
-			CanTrace = false;
-		}
+		UpdateHover(DeltaTime);
 	}
+
+	if (IsUsing)
+	{
+		UpdateUse(DeltaTime);
+	}
+}
+
+void UInteractionComponent::UpdateHover(const float InDeltaTime)
+{
+	//Request async trace
+	if (UWorld* World = GetWorld())
+	{
+		const FTransform PlayerViewpoint = CachedViewInterface->GetCameraTransform();
+
+		const FVector StartLocation = PlayerViewpoint.GetLocation();
+		const FVector EndLocation = PlayerViewpoint.GetLocation() + ((PlayerViewpoint.GetRotation().Vector() * TraceDistance));
+
+		World->AsyncLineTraceByChannel(EAsyncTraceType::Single, StartLocation, EndLocation, ECC_Interaction, TraceParams, FCollisionResponseParams::DefaultResponseParam, &TraceDelegate);
+		CanTrace = false;
+	}
+}
+
+void UInteractionComponent::UpdateUse(const float InDeltaTime)
+{
+	UseTime = FMath::Max(UseTime + InDeltaTime, 0.f);
+	UE_LOG(InteractionComponentLog, Log, TEXT("UseTime: %f"), UseTime);
 }
 
 void UInteractionComponent::OnTraceComplete(const FTraceHandle& InHandle, FTraceDatum& InData)

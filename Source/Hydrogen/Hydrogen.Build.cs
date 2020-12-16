@@ -18,10 +18,15 @@ public class Hydrogen : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] 
 		{
-"Collision",
-"Interaction",
-"Camera",
-			"Movement"
+            "Collision",
+            "Interaction",
+            "Camera",
+            "Movement"
 		});
-	}
+
+        PrivateDependencyModuleNames.AddRange(new string[]
+        {
+            "ObjectMessaging"
+        });
+    }
 }

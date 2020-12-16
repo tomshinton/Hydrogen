@@ -54,7 +54,7 @@ Build/*
 
 #Information added by JetBrains Rider for Unreal Engine
 .idea/*
-Plugins/Developer/RiderLink
+Plugins/*/RiderLink
 
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
 !Build/*/
