@@ -22,5 +22,6 @@ public:
 	//IHoverableInterface
 	virtual void OnEndHover() override { UE_LOG(HoverableComponentLog, Log, TEXT("Ending hover of %s"), *GetOwner()->GetName()); }
 	virtual void OnStartHover() override { UE_LOG(HoverableComponentLog, Log, TEXT("Starting hover of %s"), *GetOwner()->GetName()); }
+	virtual AActor* GetActor() override final { return Cast<AActor>(GetOwner()); }
 	//~IHoverableInterface
 };

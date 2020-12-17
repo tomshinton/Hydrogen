@@ -3,6 +3,9 @@
 #include <Runtime/Camera/Public/PlayerViewInterface.h>
 #include <Runtime/Collision/Public/CollisionDefs.h>
 #include <Runtime/Interaction/Public/Hovering/HoverableInterface.h>
+#include <Runtime/UseFramework/Public/Events/UseEvents.h>
+#include <ObjectMessaging/Public/Listener/ObjectMessagingListenerInterface.h>
+#include <ObjectMessaging/Public/Sender/ObjectMessagingFunctions.h>
 
 DEFINE_LOG_CATEGORY_STATIC(InteractionComponentLog, Log, Log)
 
@@ -61,6 +64,22 @@ void UInteractionComponent::SetupComponentInputBindings(UInputComponent& PlayerI
 
 void UInteractionComponent::StartUse()
 {
+	if (CurrentHover.IsValid())
+	{
+		if (IObjectMessagingListenerInterface* ListenerInterface = CurrentHover->GetActor()->GetInterface<IObjectMessagingListenerInterface>())
+		{
+			ObjectMessagingFunctions::SendMessage<FOnStartUse>(*ListenerInterface, FOnStartUse([WeakThis = TWeakObjectPtr<UInteractionComponent>(this)]()
+			{
+				if (UInteractionComponent* StrongThis = WeakThis.Get())
+				{
+					return StrongThis->UseTime;
+				}
+
+				return 0.f;
+			}));
+		}
+	}
+
 	IsUsing = true;
 }
 
@@ -68,9 +87,12 @@ void UInteractionComponent::EndUse()
 {
 	IsUsing = false;
 
-	if (UseTime <= TapLength)
+	if (CurrentHover.IsValid())
 	{
-		UE_LOG(InteractionComponentLog, Log, TEXT("Ended using with a tap"));
+		if (IObjectMessagingListenerInterface* ListenerInterface = CurrentHover->GetActor()->GetInterface<IObjectMessagingListenerInterface>())
+		{
+			ObjectMessagingFunctions::SendMessage<FOnEndUse>(*ListenerInterface, UseTime <= TapLength ? 0.f : UseTime);
+		}
 	}
 
 	UseTime = 0.f;
@@ -109,7 +131,6 @@ void UInteractionComponent::UpdateHover(const float InDeltaTime)
 void UInteractionComponent::UpdateUse(const float InDeltaTime)
 {
 	UseTime = FMath::Max(UseTime + InDeltaTime, 0.f);
-	UE_LOG(InteractionComponentLog, Log, TEXT("UseTime: %f"), UseTime);
 }
 
 void UInteractionComponent::OnTraceComplete(const FTraceHandle& InHandle, FTraceDatum& InData)
@@ -181,6 +202,12 @@ void UInteractionComponent::ClearCurrentHover()
 	if (CurrentHover.IsValid())
 	{
 		CurrentHover->OnEndHover();
+
+		if (IsUsing)
+		{
+			EndUse();
+		}
+
 		CurrentHover = TWeakInterfacePtr<IHoverableInterface>();
 	}
 }

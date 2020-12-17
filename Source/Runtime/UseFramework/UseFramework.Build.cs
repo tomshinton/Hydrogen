@@ -1,8 +1,8 @@
 using UnrealBuildTool;
 
-public class Interaction : ModuleRules
+public class UseFramework : ModuleRules
 {
-	public Interaction(ReadOnlyTargetRules Target) : base(Target)
+	public UseFramework(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
@@ -11,14 +11,11 @@ public class Interaction : ModuleRules
         PrivateDependencyModuleNames.AddRange(new string[] 
         {
             "Engine",
-			"Camera",
-			"Collision",
             "CoreUObject",
-			"UseFramework",
 			"ObjectMessaging"
         });
 		
-		PublicIncludePaths.AddRange(new string[] {"Runtime/Interaction/Public"});
-		PrivateIncludePaths.AddRange(new string[] {"Runtime/Interaction/Private"});
+		PublicIncludePaths.AddRange(new string[] {"Runtime/UseFramework/Public"});
+		PrivateIncludePaths.AddRange(new string[] {"Runtime/UseFramework/Private"});
     }
 }

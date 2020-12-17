@@ -20,4 +20,5 @@ public:
 
 	virtual void OnEndHover() = 0;
 	virtual void OnStartHover() = 0;
+	virtual AActor* GetActor() = 0;
 };
