@@ -7,6 +7,8 @@
 
 #include "HydrogenPlayerController.generated.h"
 
+class UInventoryComponent;
+
 UCLASS()
 class AHydrogenPlayerController : public APlayerController
 {
@@ -19,4 +21,7 @@ public:
 private:
 
 	void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere)
+	UInventoryComponent* InventoryComponent;
 };

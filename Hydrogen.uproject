@@ -36,6 +36,16 @@
       "Name": "UseFramework",
       "Type": "Runtime",
       "LoadingPhase": "Default"
+    },
+    {
+      "Name": "Inventory",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "Items",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
     }
   ]
 }
