@@ -78,17 +78,17 @@ void UInteractionComponent::StartUse()
 				return 0.f;
 			}));
 		}
-	}
 
-	IsUsing = true;
+		IsUsing = true;
+	}
 }
 
 void UInteractionComponent::EndUse()
 {
-	IsUsing = false;
-
-	if (CurrentHover.IsValid())
+	if (CurrentHover.IsValid() && IsUsing)
 	{
+		IsUsing = false;
+		
 		if (IObjectMessagingListenerInterface* ListenerInterface = CurrentHover->GetActor()->GetInterface<IObjectMessagingListenerInterface>())
 		{
 			ObjectMessagingFunctions::SendMessage<FOnEndUse>(*ListenerInterface, UseTime <= TapLength ? 0.f : UseTime);
