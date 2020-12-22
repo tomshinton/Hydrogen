@@ -17,3 +17,24 @@ void FInventory::Initialise()
 	}
 }
 
+TArray<FItemSlot*> FInventory::GetFlatInventory()
+{
+	QUICK_SCOPE_CYCLE_COUNTER(STAT_Inventory_GetFlatInventory);
+
+	TArray<FItemSlot*> Slots;
+
+	for (FBag& Bag : Bags)
+	{
+		Slots.Append(Bag.GetSlots());
+	}
+
+	return Slots;
+}
+
+TArray<FItemSlot*> FInventory::GetSlotsByPredicate(const TFunction<bool(const FItemSlot* Slot)>& InPredicate)
+{
+	QUICK_SCOPE_CYCLE_COUNTER(STAT_Inventory_GetSlotByPredicate);
+
+	return GetFlatInventory().FilterByPredicate(InPredicate);
+}
+

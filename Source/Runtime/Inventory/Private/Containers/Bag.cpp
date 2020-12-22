@@ -18,3 +18,15 @@ void FBag::Initialise(const uint8 InSlotCount)
 	}
 }
 
+TArray<FItemSlot*> FBag::GetSlots()
+{
+	TArray<FItemSlot*> SlotPtrs;
+
+	for (FItemSlot& Slot : Slots)
+	{
+		SlotPtrs.Add(&Slot);
+	}
+
+	return SlotPtrs;
+}
+

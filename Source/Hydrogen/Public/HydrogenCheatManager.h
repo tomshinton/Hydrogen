@@ -18,4 +18,13 @@ public:
 
 	UFUNCTION(Exec, Category = "Test")
 	void TestNetworkedLog(const FString& InTestLog);
+
+	UFUNCTION(Exec, Category = "Inventory")
+	void AddItemToPlayer(const FName& InName, const uint8 InAmount);
+
+	UFUNCTION(Exec, Category = "Inventory")
+	void RemoveItemFromPlayer(const FName& InName, const uint8 InAmount);
+	
+	UFUNCTION(Exec, Category = "Inventory")
+	void PrintPlayerInventory();
 };

@@ -10,8 +10,9 @@ public class Inventory : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[] 
         {
+            "CoreUObject",
             "Engine",
-            "CoreUObject"
+			"Items"
         });
 		
 		PublicIncludePaths.AddRange(new string[] {"Runtime/Inventory/Public"});

@@ -16,9 +16,12 @@ public:
 	FInventory();
 	
 	void Initialise();
+	TArray<FItemSlot*> GetFlatInventory();
 
 	UPROPERTY(EditAnywhere, Category = "Defaults", NotReplicated)
 	TArray<FBag> InitialBags;
+
+	TArray<FItemSlot*> GetSlotsByPredicate(const TFunction<bool(const FItemSlot* Slot)>& InPredicate);
 
 private:
 

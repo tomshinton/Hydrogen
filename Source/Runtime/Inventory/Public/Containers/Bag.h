@@ -15,6 +15,7 @@ public:
 	FBag();
 
 	void Initialise(const uint8 InSlotCount);
+	TArray<FItemSlot*> GetSlots();
 
 	UPROPERTY(EditAnywhere)
 	uint8 SlotCount;
