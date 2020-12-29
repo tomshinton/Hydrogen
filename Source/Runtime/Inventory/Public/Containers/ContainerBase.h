@@ -8,8 +8,9 @@ struct FContainerBase
 	GENERATED_BODY()
 
 	FContainerBase()
-		: ContainerID(FGuid::NewGuid())
-	{};
+		: ContainerID(FGuid())
+	{
+	};
 
 	UPROPERTY()
 	FGuid ContainerID;

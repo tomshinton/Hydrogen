@@ -2,12 +2,16 @@
 
 FItemSlot::FItemSlot()
 	: FContainerBase()
+	, Info()
+	, ItemName("")
+	, Quantity()
 {
-
 }
 
 void FItemSlot::TryAddTo(uint8& InAmountToAdd)
 {
+	const uint8 StartingQuantity = Quantity;
+
 	const FItemRow RowInfo = Info.GetValue();
 	const uint8 SpaceLeftInSlot = RowInfo.StackSize - Quantity;
 
@@ -21,10 +25,14 @@ void FItemSlot::TryAddTo(uint8& InAmountToAdd)
 		Quantity = RowInfo.StackSize;
 		InAmountToAdd -= SpaceLeftInSlot;
 	}
+
+	OnSlotChanged.Broadcast(StartingQuantity, Quantity);
 }
 
 void FItemSlot::TryRemoveFrom(int8& InAmountToRemove)
 {
+	const uint8 StartingQuantity = Quantity;
+
 	if (Quantity >= InAmountToRemove)
 	{
 		const uint8 LastQuantity = Quantity;
@@ -41,6 +49,8 @@ void FItemSlot::TryRemoveFrom(int8& InAmountToRemove)
 	{
 		ClearSlot();
 	}
+
+	OnSlotChanged.Broadcast(StartingQuantity, Quantity);
 }
 
 void FItemSlot::ClearSlot()
@@ -64,5 +74,13 @@ bool FItemSlot::IsFull() const
 bool FItemSlot::CanStoreItem(const FName& InName) const
 {
 	return InName != ItemName;
+}
+
+bool FItemSlot::operator==(const FItemSlot& InOtherInfo) const
+{
+	return
+		InOtherInfo.ItemName == ItemName &&
+		InOtherInfo.Quantity == Quantity &&
+		InOtherInfo.ContainerID == ContainerID;
 }
 

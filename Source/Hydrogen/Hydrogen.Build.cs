@@ -18,13 +18,14 @@ public class Hydrogen : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] 
 		{
-"Items",
-"Inventory",
-"UseFramework",
+            "Camera",
             "Collision",
             "Interaction",
-            "Camera",
-            "Movement"
+            "Inventory",
+            "Items",
+            "Movement",
+            "UICore",
+			"UseFramework",
 		});
 
         PrivateDependencyModuleNames.AddRange(new string[]

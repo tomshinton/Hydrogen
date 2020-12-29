@@ -32,10 +32,15 @@ public:
 #if WITH_SERVER_CODE
 	virtual void AddItem(const FName& InItem, const uint8 InAmount) override;
 	virtual void RemoveItem(const FName& InItem, const uint8 InAmount) override;
+	const FInventory* GetInventory() const override;
 #endif //WITH_SERVER_CODE
+
 #if !UE_BUILD_SHIPPING
 	virtual void PrintPlayerInventory() override;
 #endif //!UE_BUILD_SHIPPING
+
+	virtual FOnInventoryReceived& GetOnInventoryReceived() override final;
+	virtual FOnInventoryUpdated& GetOnInventoryUpdated() override final;
 	//~IInventroyInterface
 
 	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Inventory)
@@ -51,8 +56,15 @@ private:
 
 	UFUNCTION()
 	void OnRep_Inventory(const FInventory& InLastInventory);
+	
+#if WITH_CLIENT_CODE
+	void UpdateChangedSlots(const FInventory& InLastInventory) const;
+#endif //WITH_CLIENT_CODE
 
-	void PopulateSlotFromLookup(FItemSlot* InSlot, const FName& InName);
+	void PopulateSlotFromLookup(const FItemSlot* InSlot, const FName& InName) const;
 
 	TUniquePtr<FAsyncLoader> AsyncLoader;
+
+	FOnInventoryReceived OnInventoryReceived;
+	FOnInventoryUpdated OnInventoryUpdated;
 };

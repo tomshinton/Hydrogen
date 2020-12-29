@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Runtime/Inventory/Public/Containers/ContainerBase.h"
+
+#include "Runtime/Inventory/Public/Containers/BagFilters.h"
 #include "Runtime/Inventory/Public/Containers/ItemSlot.h"
 
 #include "Bag.generated.h"
@@ -13,12 +15,16 @@ struct FBag : public FContainerBase
 public:
 
 	FBag();
+	FBag(const FBag& InSourceBag);
 
-	void Initialise(const uint8 InSlotCount);
-	TArray<FItemSlot*> GetSlots();
+	INVENTORY_API void Initialise(const uint8 InSlotCount);
+	INVENTORY_API TArray<const FItemSlot*> GetSlots() const;
 
 	UPROPERTY(EditAnywhere)
 	uint8 SlotCount;
+
+	UPROPERTY(EditAnywhere, Category = "Filter")
+	TArray<TSubclassOf<UBagFilter>> Filters;
 
 private:
 

@@ -11,6 +11,7 @@ UInventoryComponent::UInventoryComponent()
 	: Inventory()
 	, ItemsLookup(nullptr)
 	, AsyncLoader(new FAsyncLoader())
+	, OnInventoryUpdated()
 {
 	bReplicates = true;
 }
@@ -39,17 +40,36 @@ void UInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 #if !UE_BUILD_SHIPPING
 void UInventoryComponent::PrintPlayerInventory()
 {
-	const TArray<FItemSlot*> Slots = Inventory.GetFlatInventory();
+	UE_LOG(InventoryComponentLog, Log, TEXT("Inventory ID: %s"), *Inventory.ContainerID.ToString());
+
+	const TArray<const FItemSlot*> Slots = Inventory.GetFlatInventory();
 	for (int32 i = 0; i < Slots.Num(); ++i)
 	{
 		const FItemSlot* CurrentSlot = Slots[i];
-		UE_LOG(InventoryComponentLog, Log, TEXT("[%i] %s (%i)"),
+		UE_LOG(InventoryComponentLog, Log, TEXT("%s [%i] %s (%i) ID: %s"),
+			GetNetMode() == NM_DedicatedServer ? TEXT("Server") : TEXT("Client"),
 			i + 1,
 			CurrentSlot->IsEmpty() ? TEXT("Empty") : *CurrentSlot->Info.GetValue().ItemName.ToString(),
-			CurrentSlot->Quantity);
+			CurrentSlot->Quantity,
+			*CurrentSlot->ContainerID.ToString());
 	}
 }
 #endif //!UE_BUILD_SHIPPING
+
+FOnInventoryReceived& UInventoryComponent::GetOnInventoryReceived()
+{
+	return OnInventoryReceived;
+}
+
+FOnInventoryUpdated& UInventoryComponent::GetOnInventoryUpdated()
+{
+	return OnInventoryUpdated;
+}
+
+const FInventory* UInventoryComponent::GetInventory() const
+{
+	return &Inventory;
+}
 
 void UInventoryComponent::InitaliseInventory()
 {
@@ -68,7 +88,11 @@ void UInventoryComponent::CacheItemsLookup()
 			if (UInventoryComponent* StrongThis = WeakThis.Get())
 			{
 				StrongThis->ItemsLookup = &InLoadedTable;
-				StrongThis->InitaliseInventory();
+
+				if (StrongThis->GetNetMode() == NM_DedicatedServer)
+				{
+					StrongThis->InitaliseInventory();
+				}
 			}
 		});
 	}
@@ -76,16 +100,48 @@ void UInventoryComponent::CacheItemsLookup()
 
 void UInventoryComponent::OnRep_Inventory(const FInventory& InLastInventory)
 {
-	UE_LOG(InventoryComponentLog, Log, TEXT("%s's inventory repped"), *GetOwner()->GetName());
+#if WITH_CLIENT_CODE
+	if (GetNetMode() != NM_DedicatedServer)
+	{
+		UE_LOG(InventoryComponentLog, Log, TEXT("%s's inventory repped"), *GetOwner()->GetName());
+		OnInventoryUpdated.Broadcast(&Inventory);
+
+		if (!Inventory.IsInitialised)
+		{
+			Inventory.IsInitialised = true;
+			OnInventoryReceived.Broadcast();
+		}
+
+		UpdateChangedSlots(InLastInventory);
+	}
+#endif //WITH_CLIENT_CODE
 }
 
-void UInventoryComponent::PopulateSlotFromLookup(FItemSlot* InSlot, const FName& InName)
+#if WITH_CLIENT_CODE
+void UInventoryComponent::UpdateChangedSlots(const FInventory& InLastInventory) const
 {
+	const TArray<const FItemSlot*> ChangedSlots = InventoryHelpers::GetAlteredSlots(Inventory, InLastInventory);
+	for (const FItemSlot* Slot : ChangedSlots)
+	{
+		if (Slot->IsEmpty() && ItemsLookup != nullptr)
+		{
+			PopulateSlotFromLookup(Slot, Slot->ItemName);
+		}
+
+		Slot->OnSlotChanged.Broadcast(Slot->Quantity, Slot->Quantity);
+	}
+}
+#endif //WITH_CLIENT_CODE
+
+void UInventoryComponent::PopulateSlotFromLookup(const FItemSlot* InSlot, const FName& InName) const
+{
+	FItemSlot* SlotMutable = const_cast<FItemSlot*>(InSlot);
+	SlotMutable->ItemName = InName;
+
 	FString Context;
 	if (FItemRow* FoundRow = ItemsLookup->FindRow<FItemRow>(InName, Context, true))
 	{
-		InSlot->ItemName = InName;
-		InSlot->Info = *FoundRow;
+		SlotMutable->Info = *FoundRow;
 	}
 }
 
@@ -96,7 +152,7 @@ void UInventoryComponent::AddItem(const FName& InItem, const uint8 InAmount)
 
 	while (AmountLeft > 0)
 	{
-		const TArray<FItemSlot*> ViableSlots = Inventory.GetSlotsByPredicate([&InItem](const FItemSlot* Slot)
+		const TArray<const FItemSlot*> ViableSlots = Inventory.GetSlotsByPredicate([&InItem](const FItemSlot* Slot)
 		{
 			if (Slot->IsEmpty())
 			{
@@ -115,15 +171,16 @@ void UInventoryComponent::AddItem(const FName& InItem, const uint8 InAmount)
 		if (ViableSlots.Num() > 0)
 		{
 			UE_LOG(InventoryComponentLog, Log, TEXT("Found %i viable slots - attempting to add %i"), ViableSlots.Num(), AmountLeft);
-			if (FItemSlot* TargetSlot = ViableSlots[0])
+			if (const FItemSlot* TargetSlot = ViableSlots[0])
 			{
+				FItemSlot* SlotMutable = const_cast<FItemSlot*>(TargetSlot);
 				if (TargetSlot->IsEmpty())
 				{
 					PopulateSlotFromLookup(TargetSlot, InItem);
 				}
 
 				//Passed in by ref
-				TargetSlot->TryAddTo(AmountLeft);
+				SlotMutable->TryAddTo(AmountLeft);
 			}
 		}
 		else
@@ -132,7 +189,7 @@ void UInventoryComponent::AddItem(const FName& InItem, const uint8 InAmount)
 		}
 	}
 
-	PrintPlayerInventory();
+	OnInventoryUpdated.Broadcast(&Inventory);
 }
 #endif //WITH_SERVER_CODE
 
@@ -143,7 +200,7 @@ void UInventoryComponent::RemoveItem(const FName& InItem, const uint8 InAmount)
 
 	while (AmountLeft > 0)
 	{
-		const TArray<FItemSlot*> ViableSlots = Inventory.GetSlotsByPredicate([&InItem](const FItemSlot* Slot)
+		const TArray<const FItemSlot*> ViableSlots = Inventory.GetSlotsByPredicate([&InItem](const FItemSlot* Slot)
 		{
 			return Slot->ItemName == InItem && !Slot->IsEmpty();
 		});
@@ -151,9 +208,10 @@ void UInventoryComponent::RemoveItem(const FName& InItem, const uint8 InAmount)
 		//Doing this backwards gives us a more aesthetic experience
 		if (ViableSlots.Num() > 0)
 		{
-			if (FItemSlot* TargetSlot = ViableSlots.Last())
+			if (const FItemSlot* TargetSlot = ViableSlots.Last())
 			{
-				TargetSlot->TryRemoveFrom(AmountLeft);
+				FItemSlot* SlotMutable = const_cast<FItemSlot*>(TargetSlot);
+				SlotMutable->TryRemoveFrom(AmountLeft);
 			}
 		}
 		else
@@ -162,6 +220,6 @@ void UInventoryComponent::RemoveItem(const FName& InItem, const uint8 InAmount)
 		}
 	}
 
-	PrintPlayerInventory();
+	OnInventoryUpdated.Broadcast(&Inventory);
 }
 #endif //WITH_SERVER_CODE

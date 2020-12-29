@@ -67,7 +67,11 @@ void UHydrogenCheatManager::PrintPlayerInventory()
 		}
 		else
 		{
-			EoS("PrintPlayerInventory");
+			if (IInventoryInterface* InventoryInterface = LocalController->GetInterface<IInventoryInterface>())
+			{
+				InventoryInterface->PrintPlayerInventory();
+				EoS("PrintPlayerInventory");
+			}
 		}
 	}
 }

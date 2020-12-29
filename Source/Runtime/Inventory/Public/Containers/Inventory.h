@@ -15,13 +15,19 @@ public:
 
 	FInventory();
 	
+#if WITH_SERVER_CODE
 	void Initialise();
-	TArray<FItemSlot*> GetFlatInventory();
+#endif //WITH_SERVER_CODE
+
+	TArray<const FItemSlot*> GetFlatInventory() const;
+	
+	INVENTORY_API TArray<const FItemSlot*> GetSlotsByPredicate(const TFunction<bool(const FItemSlot* Slot)>& InPredicate) const;
+	INVENTORY_API TArray<const FBag*> GetBagsByPredicate(const TFunction<bool(const FBag* Bag)>& InPredicate) const;
 
 	UPROPERTY(EditAnywhere, Category = "Defaults", NotReplicated)
 	TArray<FBag> InitialBags;
 
-	TArray<FItemSlot*> GetSlotsByPredicate(const TFunction<bool(const FItemSlot* Slot)>& InPredicate);
+	bool IsInitialised;
 
 private:
 

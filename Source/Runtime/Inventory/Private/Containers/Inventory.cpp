@@ -2,28 +2,36 @@
 
 FInventory::FInventory()
 	: FContainerBase()
+	, InitialBags()
+	, IsInitialised(false)
+	, Bags()
 {
 
 }
 
+#if WITH_SERVER_CODE
 void FInventory::Initialise()
 {
+	ContainerID = FGuid::NewGuid();
+
 	Bags.Reserve(InitialBags.Num());
 
 	for (const FBag& Bag : InitialBags)
 	{
-		const uint8 LastAddedBag = Bags.Emplace(FBag());
-		Bags[LastAddedBag].Initialise(Bag.SlotCount);
+		Bags.Emplace(FBag(Bag));
 	}
-}
 
-TArray<FItemSlot*> FInventory::GetFlatInventory()
+	IsInitialised = true;
+}
+#endif //WITH_SERVER_CODE
+
+TArray<const FItemSlot*> FInventory::GetFlatInventory() const
 {
 	QUICK_SCOPE_CYCLE_COUNTER(STAT_Inventory_GetFlatInventory);
 
-	TArray<FItemSlot*> Slots;
+	TArray<const FItemSlot*> Slots;
 
-	for (FBag& Bag : Bags)
+	for (const FBag& Bag : Bags)
 	{
 		Slots.Append(Bag.GetSlots());
 	}
@@ -31,10 +39,21 @@ TArray<FItemSlot*> FInventory::GetFlatInventory()
 	return Slots;
 }
 
-TArray<FItemSlot*> FInventory::GetSlotsByPredicate(const TFunction<bool(const FItemSlot* Slot)>& InPredicate)
+TArray<const FItemSlot*> FInventory::GetSlotsByPredicate(const TFunction<bool(const FItemSlot* Slot)>& InPredicate) const
 {
 	QUICK_SCOPE_CYCLE_COUNTER(STAT_Inventory_GetSlotByPredicate);
 
 	return GetFlatInventory().FilterByPredicate(InPredicate);
+}
+
+TArray<const FBag*> FInventory::GetBagsByPredicate(const TFunction<bool(const FBag* Bag)>& InPredicate) const
+{
+	TArray<const FBag*> BagPtrs;
+	for (const FBag& Bag : Bags)
+	{
+		BagPtrs.Add(&Bag);
+	}
+
+	return BagPtrs.FilterByPredicate(InPredicate);
 }
 

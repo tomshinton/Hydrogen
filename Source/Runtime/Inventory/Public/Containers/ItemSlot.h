@@ -6,6 +6,8 @@
 
 #include "ItemSlot.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemSlotChanged, uint8 /*Quantity from*/, uint8 /*Quantity To*/)
+
 USTRUCT()
 struct FItemSlot : public FContainerBase
 {
@@ -23,6 +25,8 @@ public:
 	UPROPERTY()
 	uint8 Quantity;
 
+	FOnItemSlotChanged OnSlotChanged;
+
 	void TryAddTo(uint8& InAmountToAdd);
 	void TryRemoveFrom(int8& InAmountToRemove);
 
@@ -30,4 +34,7 @@ public:
 	bool IsEmpty() const;
 	bool IsFull() const;
 	bool CanStoreItem(const FName& InName) const;
+
+	bool operator==(const FItemSlot& InOtherInfo) const;
+
 };
