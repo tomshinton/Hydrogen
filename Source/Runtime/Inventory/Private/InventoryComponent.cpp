@@ -135,13 +135,20 @@ void UInventoryComponent::UpdateChangedSlots(const FInventory& InLastInventory) 
 
 void UInventoryComponent::PopulateSlotFromLookup(const FItemSlot* InSlot, const FName& InName) const
 {
-	FItemSlot* SlotMutable = const_cast<FItemSlot*>(InSlot);
-	SlotMutable->ItemName = InName;
-
-	FString Context;
-	if (FItemRow* FoundRow = ItemsLookup->FindRow<FItemRow>(InName, Context, true))
+	if (InName.IsNone())
 	{
-		SlotMutable->Info = *FoundRow;
+		return;
+	}
+	else
+	{
+		FItemSlot* SlotMutable = const_cast<FItemSlot*>(InSlot);
+		SlotMutable->ItemName = InName;
+
+		FString Context;
+		if (FItemRow* FoundRow = ItemsLookup->FindRow<FItemRow>(InName, Context, true))
+		{
+			SlotMutable->Info = *FoundRow;
+		}
 	}
 }
 

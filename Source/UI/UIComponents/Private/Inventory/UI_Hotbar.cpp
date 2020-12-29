@@ -7,7 +7,6 @@
 #include <Runtime/Inventory/Public/Containers/BagFilters.h>
 #include <Runtime/Inventory/Public/Containers/Inventory.h>
 #include <Runtime/Inventory/Public/InventoryInterface.h>
-#include <Runtime/UMG/Public/Blueprint/WidgetTree.h>
 #include <Runtime/UMG/Public/Components/HorizontalBox.h>
 #include <Runtime/UMG/Public/Components/VerticalBox.h>
 
@@ -72,7 +71,16 @@ void UUI_Hotbar::SourceBags()
 					}
 					else
 					{
-						UE_LOG(HotbarLog, Error, TEXT("Local inventory contains no bars with a Hotbar filter applied - cannot build hotbar"));
+						UE_LOG(HotbarLog, Warning, TEXT("Local inventory contains no bars with a Hotbar filter applied - cannot build hotbar"));
+						UE_LOG(HotbarLog, Warning, TEXT("Deferring Hotbar initialisation until inventory has been initialised on the client"));
+
+						LocalInventoryInterface->GetOnInventoryReceived().AddLambda([WeakThis = TWeakObjectPtr<UUI_Hotbar>(this)]()
+						{
+							if (UUI_Hotbar* StrongThis = WeakThis.Get())
+							{
+								StrongThis->SourceBags();
+							}
+						});
 					}
 				}
 			}
