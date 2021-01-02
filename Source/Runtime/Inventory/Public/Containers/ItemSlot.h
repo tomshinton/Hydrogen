@@ -6,7 +6,7 @@
 
 #include "ItemSlot.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemSlotChanged, uint8 /*Quantity from*/, uint8 /*Quantity To*/)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnItemSlotChanged, const FItemSlot& /*LastState*/)
 
 USTRUCT()
 struct FItemSlot : public FContainerBase
@@ -31,7 +31,7 @@ public:
 	void TryRemoveFrom(int8& InAmountToRemove);
 
 	void ClearSlot();
-	bool IsEmpty() const;
+	INVENTORY_API bool IsEmpty() const;
 	bool IsFull() const;
 	bool CanStoreItem(const FName& InName) const;
 

@@ -123,17 +123,27 @@ void UInventoryComponent::UpdateChangedSlots(const FInventory& InLastInventory) 
 	const TArray<const FItemSlot*> ChangedSlots = InventoryHelpers::GetAlteredSlots(Inventory, InLastInventory);
 	for (const FItemSlot* Slot : ChangedSlots)
 	{
-		if (Slot->IsEmpty() && ItemsLookup != nullptr)
+		const FItemSlot LastState = *Slot;
+
+		if (ItemsLookup != nullptr)
 		{
-			PopulateSlotFromLookup(Slot, Slot->ItemName);
+			FItemSlot* SlotMutable = const_cast<FItemSlot*>(Slot);
+			if (Slot->IsEmpty() && Slot->Quantity > 0)
+			{
+				PopulateSlotFromLookup(SlotMutable, Slot->ItemName);
+			}
+			else
+			{
+				SlotMutable->ClearSlot();
+			}
 		}
 
-		Slot->OnSlotChanged.Broadcast(Slot->Quantity, Slot->Quantity);
+		Slot->OnSlotChanged.Broadcast(LastState);
 	}
 }
 #endif //WITH_CLIENT_CODE
 
-void UInventoryComponent::PopulateSlotFromLookup(const FItemSlot* InSlot, const FName& InName) const
+void UInventoryComponent::PopulateSlotFromLookup(FItemSlot* InSlot, const FName& InName) const
 {
 	if (InName.IsNone())
 	{
@@ -141,13 +151,12 @@ void UInventoryComponent::PopulateSlotFromLookup(const FItemSlot* InSlot, const 
 	}
 	else
 	{
-		FItemSlot* SlotMutable = const_cast<FItemSlot*>(InSlot);
-		SlotMutable->ItemName = InName;
+		InSlot->ItemName = InName;
 
 		FString Context;
 		if (FItemRow* FoundRow = ItemsLookup->FindRow<FItemRow>(InName, Context, true))
 		{
-			SlotMutable->Info = *FoundRow;
+			InSlot->Info = *FoundRow;
 		}
 	}
 }
@@ -183,7 +192,7 @@ void UInventoryComponent::AddItem(const FName& InItem, const uint8 InAmount)
 				FItemSlot* SlotMutable = const_cast<FItemSlot*>(TargetSlot);
 				if (TargetSlot->IsEmpty())
 				{
-					PopulateSlotFromLookup(TargetSlot, InItem);
+					PopulateSlotFromLookup(SlotMutable, InItem);
 				}
 
 				//Passed in by ref

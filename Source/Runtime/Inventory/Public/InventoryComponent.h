@@ -61,7 +61,7 @@ private:
 	void UpdateChangedSlots(const FInventory& InLastInventory) const;
 #endif //WITH_CLIENT_CODE
 
-	void PopulateSlotFromLookup(const FItemSlot* InSlot, const FName& InName) const;
+	void PopulateSlotFromLookup(FItemSlot* InSlot, const FName& InName) const;
 
 	TUniquePtr<FAsyncLoader> AsyncLoader;
 

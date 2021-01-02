@@ -10,6 +10,8 @@ FItemSlot::FItemSlot()
 
 void FItemSlot::TryAddTo(uint8& InAmountToAdd)
 {
+	const FItemSlot LastState = *this;
+
 	const uint8 StartingQuantity = Quantity;
 
 	const FItemRow RowInfo = Info.GetValue();
@@ -26,11 +28,13 @@ void FItemSlot::TryAddTo(uint8& InAmountToAdd)
 		InAmountToAdd -= SpaceLeftInSlot;
 	}
 
-	OnSlotChanged.Broadcast(StartingQuantity, Quantity);
+	OnSlotChanged.Broadcast(LastState);
 }
 
 void FItemSlot::TryRemoveFrom(int8& InAmountToRemove)
 {
+	const FItemSlot LastState = *this;
+
 	const uint8 StartingQuantity = Quantity;
 
 	if (Quantity >= InAmountToRemove)
@@ -50,7 +54,7 @@ void FItemSlot::TryRemoveFrom(int8& InAmountToRemove)
 		ClearSlot();
 	}
 
-	OnSlotChanged.Broadcast(StartingQuantity, Quantity);
+	OnSlotChanged.Broadcast(LastState);
 }
 
 void FItemSlot::ClearSlot()

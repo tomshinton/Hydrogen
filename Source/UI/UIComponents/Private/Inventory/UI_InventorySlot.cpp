@@ -4,6 +4,7 @@
 #include <Runtime/Inventory/Public/Containers/ItemSlot.h>
 #include <Runtime/Inventory/Public/InventoryInterface.h>
 
+#include <Runtime/UMG/Public/Components/Image.h>
 #include <Runtime/UMG/Public/Components/TextBlock.h>
 
 UUI_InventorySlot::UUI_InventorySlot(const FObjectInitializer& InObjectInitialiser)
@@ -12,6 +13,16 @@ UUI_InventorySlot::UUI_InventorySlot(const FObjectInitializer& InObjectInitialis
 	, AssociatedSlotID()
 {
 
+}
+
+void UUI_InventorySlot::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	if (AssociatedSlotID.IsValid())
+	{
+		BindToSlot();
+	}
 }
 
 void UUI_InventorySlot::SetAssociatedSlot(IInventoryInterface* InSourceInventory, const FGuid& InAssociatedSlotID)
@@ -34,33 +45,51 @@ void UUI_InventorySlot::BindToSlot()
 	if (const FItemSlot* FoundSlot = SourceSlot[0])
 	{
 		FItemSlot* SlotMutable = const_cast<FItemSlot*>(FoundSlot);
-		SlotMutable->OnSlotChanged.AddLambda([WeakThis = TWeakObjectPtr<UUI_InventorySlot>(this), this](uint8 InFromQuantity, uint8 InToQuantity)
+		SlotMutable->OnSlotChanged.AddLambda([WeakThis = TWeakObjectPtr<UUI_InventorySlot>(this), FoundSlot = FoundSlot](const FItemSlot& InLastState)
 		{
-			if (WeakThis.IsValid())
+			if (UUI_InventorySlot* StrongThis = WeakThis.Get())
 			{
-				if (QuantityText != nullptr)
+				if (FoundSlot != nullptr)
 				{
-					if (InToQuantity > 0)
-					{
-						QuantityText->SetVisibility(ESlateVisibility::Visible);
-						QuantityText->SetText(FText::AsNumber(InToQuantity));
-					}
-					else
-					{
-						QuantityText->SetVisibility(ESlateVisibility::Hidden);
-					}
+					StrongThis->SetQuantityText(FoundSlot);
+					StrongThis->SetItemImage(FoundSlot);
 				}
 			}
 		});
 	}
 }
 
-void UUI_InventorySlot::NativeConstruct()
+void UUI_InventorySlot::SetQuantityText(const FItemSlot* InSourceSlot)
 {
-	Super::NativeConstruct();
-
-	if (AssociatedSlotID.IsValid())
+	if (QuantityText != nullptr)
 	{
-		BindToSlot();
+		const uint8 InNewQuantity = InSourceSlot->Quantity;
+
+		if (InNewQuantity > 0)
+		{
+			QuantityText->SetVisibility(ESlateVisibility::Visible);
+			QuantityText->SetText(FText::AsNumber(InNewQuantity));
+		}
+		else
+		{
+			QuantityText->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+}
+
+void UUI_InventorySlot::SetItemImage(const FItemSlot* InSourceSlot)
+{
+	if (ItemImage != nullptr)
+	{
+		if (InSourceSlot->IsEmpty())
+		{
+			ItemImage->SetVisibility(ESlateVisibility::Hidden);
+		}
+		else if (InSourceSlot->Info.IsSet())
+		{
+			ItemImage->SetVisibility(ESlateVisibility::Visible);
+			const FItemRow Info = InSourceSlot->Info.GetValue();
+			ItemImage->SetBrushFromTexture(Info.ItemIcon);
+		}
 	}
 }

@@ -7,6 +7,7 @@
 
 #include "UI_InventorySlot.generated.h"
 
+class UImage;
 class UTextBlock;
 struct FItemSlot;
 
@@ -22,6 +23,9 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* QuantityText;
 
+	UPROPERTY(meta = (BindWidget))
+	UImage* ItemImage;
+
 	void SetAssociatedSlot(IInventoryInterface* InSourceInventory, const FGuid& InAssociatedSlotID);
 
 private:
@@ -29,6 +33,9 @@ private:
 	void NativeConstruct() override;
 	void BindToSlot();
 	
+	void SetQuantityText(const FItemSlot* InSourceSlot);
+	void SetItemImage(const FItemSlot* InSourceSlot);
+
 	TWeakInterfacePtr<IInventoryInterface> SourceInventoryInterface;
 	FGuid AssociatedSlotID;
 };
