@@ -13,7 +13,7 @@
 
 class UDataTable;
 
-UCLASS(MinimalAPI)
+UCLASS(MinimalAPI, meta = (BlueprintSpawnableComponent))
 class UInventoryComponent : public UActorComponent
 	, public IInventoryInterface
 {

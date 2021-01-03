@@ -10,8 +10,11 @@ public class UICore : ModuleRules
 
         PrivateDependencyModuleNames.AddRange(new string[] 
         {
-            "Engine",
             "CoreUObject",
+			"InputCore",
+            "Engine",
+			"SlateCore",
+			"ObjectMessaging",
 			"UIComponents",
 			"UMG"
         });
