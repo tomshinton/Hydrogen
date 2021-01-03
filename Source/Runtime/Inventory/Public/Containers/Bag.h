@@ -14,7 +14,7 @@ struct FBag : public FContainerBase
 
 public:
 
-	FBag();
+	INVENTORY_API FBag();
 	FBag(const FBag& InSourceBag);
 
 	INVENTORY_API void Initialise(const uint8 InSlotCount);

@@ -132,7 +132,7 @@ void UInventoryComponent::UpdateChangedSlots(const FInventory& InLastInventory) 
 			{
 				PopulateSlotFromLookup(SlotMutable, Slot->ItemName);
 			}
-			else
+			else if(!Slot->IsEmpty() && Slot->Quantity <= 0)
 			{
 				SlotMutable->ClearSlot();
 			}

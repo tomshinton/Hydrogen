@@ -73,12 +73,11 @@ void UUI_HUD::BindEvents()
 
 void UUI_HUD::ClearOverlay()
 {
-	UE_LOG(HUDLog, Log, TEXT("Clearing overlay"));
-
 	if (OverlayContainer != nullptr)
 	{
 		if(OverlayContainer->GetChildrenCount() > 0)
 		{
+			UE_LOG(HUDLog, Log, TEXT("Clearing overlay"));
 			OverlayContainer->ClearChildren();
 		}
 	}

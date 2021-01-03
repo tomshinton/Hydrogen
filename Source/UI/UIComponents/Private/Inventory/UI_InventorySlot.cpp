@@ -56,6 +56,9 @@ void UUI_InventorySlot::BindToSlot()
 				}
 			}
 		});
+
+		SetQuantityText(FoundSlot);
+		SetItemImage(FoundSlot);
 	}
 }
 

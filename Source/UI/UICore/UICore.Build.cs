@@ -12,6 +12,8 @@ public class UICore : ModuleRules
         {
             "CoreUObject",
 			"InputCore",
+			"Inventory",
+			"Items",
             "Engine",
 			"SlateCore",
 			"ObjectMessaging",
