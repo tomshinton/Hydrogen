@@ -13,6 +13,9 @@ namespace HudBindings
 
 UUI_HUD::UUI_HUD(const FObjectInitializer& InObjectInitialiser)
 	: Super(InObjectInitialiser)
+	, OverlayContainer(nullptr)
+	, StaticOverlays()
+	, Listener()
 {
 }
 
@@ -78,6 +81,8 @@ void UUI_HUD::ClearOverlay()
 		if(OverlayContainer->GetChildrenCount() > 0)
 		{
 			UE_LOG(HUDLog, Log, TEXT("Clearing overlay"));
+
+			OverlayContainer->GetChildAt(0)->RemoveFromParent();
 			OverlayContainer->ClearChildren();
 		}
 	}

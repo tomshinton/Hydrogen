@@ -18,6 +18,7 @@ public class UICore : ModuleRules
 			"SlateCore",
 			"ObjectMessaging",
 			"UIComponents",
+			"UIPooling",
 			"UMG"
         });
 		

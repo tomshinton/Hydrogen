@@ -5,6 +5,8 @@
 #include <Runtime/Inventory/Public/InventoryInterface.h>
 #include <Runtime/UMG/Public/Components/VerticalBox.h>
 #include <UI/UIComponents/Public/Inventory/UI_BagView.h>
+#include <UI/UIPooling/Public/UIPoolProvider.h>
+
 
 UUI_CharOverlay::UUI_CharOverlay(const FObjectInitializer& InObjectInitialiser)
 	: Super(InObjectInitialiser)
@@ -54,7 +56,7 @@ void UUI_CharOverlay::BuildInventoryPanel()
 
 void UUI_CharOverlay::AddBagView(IInventoryInterface* InSourceInventory, const FBag* InSourceBag)
 {
-	if (UUI_BagView* NewBagView = NewObject<UUI_BagView>(AllBags, BagViewClass))
+	if (UUI_BagView* NewBagView = FUIPoolProvider::NewWidget<UUI_BagView>(*AllBags, BagViewClass))
 	{
 		NewBagView->SetAssociatedBag(InSourceInventory, InSourceBag);
 		AllBags->AddChild(NewBagView);

@@ -14,7 +14,8 @@ public class UIComponents : ModuleRules
             "CoreUObject",
 			"Inventory",
 			"Items",
-			"UMG"
+			"UIPooling",
+			"UMG",
         });
 		
 		PublicIncludePaths.AddRange(new string[] {"UI/UIComponents/Public"});

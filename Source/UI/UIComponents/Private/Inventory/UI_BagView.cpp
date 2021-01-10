@@ -3,6 +3,7 @@
 
 #include <Runtime/Inventory/Public/Containers/Inventory.h>
 #include <Runtime/UMG/Public/Components/WrapBox.h>
+#include <UI/UIPooling/Public/UIPoolProvider.h>
 
 DEFINE_LOG_CATEGORY_STATIC(BagViewLog, Log, Log)
 DECLARE_STATS_GROUP(TEXT("HUD"), STATGROUP_Hud, STATCAT_Advanced);
@@ -81,7 +82,7 @@ void UUI_BagView::AddSlot(IInventoryInterface* InSourceInventory, const FItemSlo
 {
 	SCOPE_CYCLE_COUNTER(STAT_AddSlot);
 
-	if (UUI_InventorySlot* NewSlot = NewObject<UUI_InventorySlot>(SlotsBox, SlotClass))
+	if (UUI_InventorySlot* NewSlot = FUIPoolProvider::NewWidget<UUI_InventorySlot>(*SlotsBox, SlotClass))
 	{
 		NewSlot->SetAssociatedSlot(InSourceInventory, InSlot->ContainerID);
 		SlotsBox->AddChild(NewSlot);

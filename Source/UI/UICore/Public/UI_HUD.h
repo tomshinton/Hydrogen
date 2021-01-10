@@ -3,6 +3,7 @@
 #include <Runtime/UMG/Public/Blueprint/UserWidget.h>
 #include <ObjectMessaging/Public/Listener/ObjectMessagingListener.h>
 #include <ObjectMessaging/Public/Listener/ObjectMessagingListenerInterface.h>
+#include <UI/UIPooling/Public/UIPoolProvider.h>
 
 #include "UI/UICore/Public/Overlays/OverlayPair.h"
 

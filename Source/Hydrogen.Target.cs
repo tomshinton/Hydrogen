@@ -9,7 +9,6 @@ public class HydrogenTarget : TargetRules
 	{
 		Type = TargetType.Game;
 
-		ExtraModuleNames.AddRange( new string[] { "Hydrogen" } );
-        ExtraModuleNames.AddRange(new string[] { "Test" });
+        ExtraModuleNames.AddRange( new string[] { "Hydrogen" } );
     }
 }
