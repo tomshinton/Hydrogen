@@ -40,14 +40,17 @@ public:
 			{
 				if (IUIPoolProviderInterface* ProviderInterface = Cast<IUIPoolProviderInterface>(HUD))
 				{
-					return ProviderInterface->GetPoolProvider().NewWidgetInternal<TWidget>(InClass);
+					if (TWidget* Widget = ProviderInterface->GetPoolProvider().NewWidgetInternal<TWidget>(InClass))
+					{
+						return Widget;
+					}
 				}
 			}
 		}
 
-		return nullptr;
-
+		return NewObject<TWidget>(const_cast<UObject*>(&InOwner), InClass);
 #else
+		//If we're running this on a non-pooling target like server, just return newobject
 		return NewObject<TWidget>(const_cast<UObject*>(&InOwner), InClass);
 #endif //UIPOOLING
 	}

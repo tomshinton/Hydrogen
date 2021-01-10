@@ -10,5 +10,5 @@ public class HydrogenEditorTarget : TargetRules
 		Type = TargetType.Editor;
 
 		ExtraModuleNames.AddRange( new string[] { "Hydrogen" } );
-	}
+    }
 }
