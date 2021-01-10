@@ -18,7 +18,5 @@ class IPlayerViewInterface
 
 public:
 
-#if WITH_CLIENT_CODE
 	virtual FTransform GetCameraTransform() const = 0;
-#endif //WITH_CLIENT_CODE
 };

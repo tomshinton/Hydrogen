@@ -20,5 +20,7 @@ class IUIPoolProviderInterface
 
 public:
 
+#if WITH_CLIENT_CODE
 	virtual FUIPoolProvider& GetPoolProvider() = 0;
+#endif //WITH_CLIENT_CODE
 };

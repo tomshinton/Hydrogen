@@ -11,12 +11,14 @@ UPlayerCameraComponent::UPlayerCameraComponent(const FObjectInitializer& InObjec
 
 }
 
+#if WITH_CLIENT_CODE
 void UPlayerCameraComponent::SetupComponentInputBindings(UInputComponent& PlayerInputComponent)
 {
 	Super::SetupComponentInputBindings(PlayerInputComponent);
 
 	PlayerInputComponent.BindAxis(PlayerCameraBindings::LookUpBinding, this, &UPlayerCameraComponent::LookUp);
-};
+}
+#endif //WITH_CLIENT_CODE
 
 void UPlayerCameraComponent::LookUp(const float InStrength)
 {

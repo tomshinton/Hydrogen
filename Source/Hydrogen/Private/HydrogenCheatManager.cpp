@@ -20,6 +20,7 @@ void UHydrogenCheatManager::TestNetworkedLog(const FString& InTestLog)
 
 void UHydrogenCheatManager::AddItemToPlayer(const FName& InName, const uint8 InAmount)
 {
+#if WITH_SERVER_CODE
 	if (APlayerController* LocalController = GetOwningController())
 	{
 		if (LocalController->GetNetMode() == NM_DedicatedServer)
@@ -34,10 +35,12 @@ void UHydrogenCheatManager::AddItemToPlayer(const FName& InName, const uint8 InA
 			EoS("AddItemToPlayer " + InName.ToString() + " " + FString::FromInt(InAmount));
 		}
 	}
+#endif //WITH_SERVER_CODE
 }
 
 void UHydrogenCheatManager::RemoveItemFromPlayer(const FName& InName, const uint8 InAmount)
 {
+#if WITH_SERVER_CODE
 	if (APlayerController* LocalController = GetOwningController())
 	{
 		if (LocalController->GetNetMode() == NM_DedicatedServer)
@@ -52,6 +55,7 @@ void UHydrogenCheatManager::RemoveItemFromPlayer(const FName& InName, const uint
 			EoS("RemoveItemFromPlayer " + InName.ToString() + " " + FString::FromInt(InAmount));
 		}
 	}
+#endif //WITH_SERVER_CODE
 }
 
 void UHydrogenCheatManager::PrintPlayerInventory()

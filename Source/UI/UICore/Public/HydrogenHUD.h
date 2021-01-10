@@ -27,7 +27,9 @@ public:
 	//~AActor
 
 	//IUIPoolProviderInterface
+#if WITH_CLIENT_CODE
 	virtual FUIPoolProvider& GetPoolProvider() override final { return UIPoolProvider; }
+#endif //WITH_CLIENT_CODE
 	//~IUIPoolProviderInterface
 
 protected:

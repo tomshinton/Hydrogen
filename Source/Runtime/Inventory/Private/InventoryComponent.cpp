@@ -71,6 +71,7 @@ const FInventory* UInventoryComponent::GetInventory() const
 	return &Inventory;
 }
 
+#if WITH_SERVER_CODE
 void UInventoryComponent::InitaliseInventory()
 {
 	if (GetNetMode() == NM_DedicatedServer)
@@ -78,6 +79,7 @@ void UInventoryComponent::InitaliseInventory()
 		Inventory.Initialise();
 	}
 }
+#endif //WITH_SERVER_CODE
 
 void UInventoryComponent::CacheItemsLookup()
 {
@@ -89,10 +91,12 @@ void UInventoryComponent::CacheItemsLookup()
 			{
 				StrongThis->ItemsLookup = &InLoadedTable;
 
+#if WITH_SERVER_CODE
 				if (StrongThis->GetNetMode() == NM_DedicatedServer)
 				{
 					StrongThis->InitaliseInventory();
 				}
+#endif //WITH_SERVER_CODE
 			}
 		});
 	}

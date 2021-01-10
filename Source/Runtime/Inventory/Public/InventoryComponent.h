@@ -32,8 +32,9 @@ public:
 #if WITH_SERVER_CODE
 	virtual void AddItem(const FName& InItem, const uint8 InAmount) override;
 	virtual void RemoveItem(const FName& InItem, const uint8 InAmount) override;
-	const FInventory* GetInventory() const override;
 #endif //WITH_SERVER_CODE
+
+	const FInventory* GetInventory() const override;
 
 #if !UE_BUILD_SHIPPING
 	virtual void PrintPlayerInventory() override;
@@ -51,7 +52,10 @@ public:
 
 private:
 
+#if WITH_SERVER_CODE
 	void InitaliseInventory();
+#endif //WITH_SERVER_CODE
+
 	void CacheItemsLookup();
 
 	UFUNCTION()

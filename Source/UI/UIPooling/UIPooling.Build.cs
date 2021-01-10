@@ -18,6 +18,6 @@ public class UIPooling : ModuleRules
 		PublicIncludePaths.AddRange(new string[] {"UI/UIPooling/Public"});
 		PrivateIncludePaths.AddRange(new string[] {"UI/UIPooling/Private"});
 
-        PublicDefinitions.Add("UIPOOLING=1");
+        PublicDefinitions.Add("UIPOOLING=0");
     }
 }

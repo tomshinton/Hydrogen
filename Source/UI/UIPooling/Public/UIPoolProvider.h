@@ -48,7 +48,7 @@ public:
 		return nullptr;
 
 #else
-		return NewObject<TWidget>(&InOwner, InClass);
+		return NewObject<TWidget>(const_cast<UObject*>(&InOwner), InClass);
 #endif //UIPOOLING
 	}
 

@@ -20,7 +20,6 @@ AHydrogenPlayerCharacter::AHydrogenPlayerCharacter(const FObjectInitializer& InO
 	PlayerCamera->SetupAttachment(RootComponent);
 }
 
-#if WITH_CLIENT_CODE
 FTransform AHydrogenPlayerCharacter::GetCameraTransform() const
 {
 	if (PlayerCamera != nullptr)
@@ -30,4 +29,3 @@ FTransform AHydrogenPlayerCharacter::GetCameraTransform() const
 
 	return FTransform::Identity;
 }
-#endif //WITH_CLIENT_CODE

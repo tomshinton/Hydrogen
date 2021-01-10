@@ -23,9 +23,7 @@ public:
 	AHydrogenPlayerCharacter(const FObjectInitializer& InObjectInitialiser);
 
 	//IPlayerViewInterface
-#if WITH_CLIENT_CODE
 	virtual FTransform GetCameraTransform() const override final;
-#endif //WITH_CLIENT_CODE
 	//~IPlayerViewInterface
 
 protected:

@@ -27,16 +27,17 @@ void UUI_Hotbar::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 
-	HotbarBox->ClearChildren();
-
+#if WITH_EDITORONLY_DATA
 	if (IsDesignTime())
 	{
+		HotbarBox->ClearChildren();
 		for (FBag& Bag : TestBags)
 		{
 			Bag.Initialise(Bag.SlotCount);
 			AddBar(nullptr, &Bag);
 		}
 	}
+#endif //WITH_EDITORONLY_DATA
 }
 
 void UUI_Hotbar::NativeConstruct()

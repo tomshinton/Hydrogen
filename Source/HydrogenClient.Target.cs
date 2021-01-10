@@ -10,5 +10,7 @@ public class HydrogenClientTarget : TargetRules
 		Type = TargetType.Client;
 
 		ExtraModuleNames.AddRange( new string[] { "Hydrogen" } );
+
+		GlobalDefinitions.Add("UIPOOLING=1");
 	}
 }

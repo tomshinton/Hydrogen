@@ -2,7 +2,9 @@
 #include "SharedPointer.h"
 
 AHydrogenHUD::AHydrogenHUD(const FObjectInitializer& InObjectInitialiser)
+#if WITH_CLIENT_CODE
 	: UIPoolProvider(*this)
+#endif //WITH_CLIENT_CODE
 {
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bAllowTickOnDedicatedServer = false;

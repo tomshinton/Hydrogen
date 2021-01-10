@@ -48,6 +48,7 @@ void UUI_BagView::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 
+#if WITH_EDITORONLY_DATA
 	if (IsDesignTime())
 	{
 		if (SlotsBox != nullptr && SlotClass != nullptr)
@@ -58,6 +59,7 @@ void UUI_BagView::SynchronizeProperties()
 			InitialiseView(nullptr, &TestBag);
 		}
 	}
+#endif //WITH_EDITORONLY_DATA
 }
 
 void UUI_BagView::SetAssociatedBag(IInventoryInterface* InSourceInventory, const FBag* InSourceBag)
